@@ -73,5 +73,20 @@
   </section>
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
   <script src="/store.js" defer></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const trigger = document.getElementById('menuTrigger');
+      const menu = document.getElementById('mobileMenu');
+      if (!trigger || !menu) return;
+      const close = () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); trigger.querySelector('span').textContent = '+'; };
+      trigger.addEventListener('click', () => {
+        const open = menu.hidden;
+        menu.hidden = !open;
+        trigger.setAttribute('aria-expanded', String(open));
+        trigger.querySelector('span').textContent = open ? '−' : '+';
+      });
+      menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
+    });
+  </script>
 </body>
 </html>
