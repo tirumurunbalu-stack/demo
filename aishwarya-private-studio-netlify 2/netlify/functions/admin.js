@@ -30,7 +30,7 @@ function json(statusCode, body, cookie) {
 }
 function getCookie(event, key) { const raw = event.headers.cookie || ''; return (raw.match(new RegExp(`(?:^|;\\s*)${key}=([^;]+)`)) || [])[1]; }
 function cookie(name, value, seconds = 0) { return `${name}=${value}; Path=/; HttpOnly; SameSite=Strict; Secure; ${seconds ? `Max-Age=${seconds}` : 'Max-Age=0'}`; }
-async function read(key) { const value = await store.get(key, { type: 'json' }); return value || null; }
+async function read(key) { for (let attempt = 0; attempt < 5; attempt += 1) { const value = await store.get(key, { type: 'json' }); if (value || attempt === 4) return value || null; await new Promise(resolve => setTimeout(resolve, 180)); } return null; }
 async function put(key, value) { await store.setJSON(key, value); }
 async function remove(key) { await store.delete(key); }
 async function storeList(key) { const value = await read(key); return Array.isArray(value) ? value : []; }
@@ -100,7 +100,7 @@ async function dashboard(event) { ownerSession(event); const [products, orders] 
 
 exports.handler = async event => {
   connectLambda(event);
-  store = getStore({ name: 'aishwarya-admin', consistency: 'strong' });
+  store = getStore({ name: 'aishwarya-admin', consistency: 'eventual' });
   try {
     if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed.' });
     const action = new URLSearchParams(event.rawQuery || '').get('action'); const body = event.body ? JSON.parse(event.body) : {};
