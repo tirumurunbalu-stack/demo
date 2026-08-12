@@ -3,97 +3,71 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Aishwarya — thoughtfully chosen sarees for modern heirlooms.">
-  <title>Aishwarya — Sarees for modern heirlooms</title>
+  <title>Aishwarya — Private Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <div class="announcement">Aishwarya Private Studio <span>•</span> Sarees chosen with care</div>
-  <header class="site-header">
-    <a class="wordmark" href="#top" aria-label="Aishwarya home">AISHWARYA</a>
-    <nav aria-label="Main navigation">
-      <a href="#collections">The edit</a>
-      <a href="#occasion">Occasions</a>
-      <a href="#instagram">Journal</a>
-    </nav>
-    <a class="header-instagram" href="https://www.instagram.com/almara_by_aishwarya/" target="_blank" rel="noreferrer">Instagram <span>↗</span></a>
+  <div class="notice">AISHWARYA PRIVATE STUDIO <span>✦</span> THOUGHTFULLY CURATED IN INDIA</div>
+  <header>
+    <a class="brand" href="/">AISHWARYA</a>
+    <nav><a href="#collections">Collections</a><a href="#story">Our story</a><a href="/admin/">Private studio</a></nav>
+    <button class="bag-trigger" id="bagTrigger" type="button" aria-haspopup="dialog">Bag <span id="bagCount">0</span> <b>→</b></button>
   </header>
-
-  <main id="top">
+  <main>
     <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">Sarees for modern heirlooms</p>
-        <h1>Woven for the <em>stories</em> you carry.</h1>
-        <p class="intro">Thoughtfully chosen silk, cotton and tissue sarees from the looms of India, for celebrations everywhere.</p>
-        <div class="hero-actions">
-          <a class="button button-dark" href="#collections">Explore the edit <span>→</span></a>
-          <a class="text-link" href="https://www.instagram.com/almara_by_aishwarya/" target="_blank" rel="noreferrer">View on Instagram <span>↗</span></a>
-        </div>
+      <div>
+        <p class="eyebrow">The Aishwarya edit</p>
+        <h1>Pieces with a<br><em>presence.</em></h1>
+        <p class="lede">Curated sarees for the moments that stay with you — thoughtfully sourced in India and sent with care.</p>
+        <a class="button" href="#collections">Explore collections <span>→</span></a>
       </div>
-      <figure class="hero-photo">
-        <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1400&q=88" alt="Woman wearing a richly detailed saree">
-      </figure>
+      <figure><img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=85" alt="Woman wearing a saree"><figcaption>01 / FESTIVE SILK</figcaption></figure>
     </section>
-
-    <section class="promise" aria-label="Aishwarya promise">
-      <p>Made for the moments you remember.</p>
-      <p>Handpicked textiles <span>•</span> personal guidance <span>•</span> timeless craft</p>
+    <section class="values">
+      <p>✦ <b>Considered selection</b><small>Chosen one piece at a time</small></p>
+      <p>⌁ <b>Secure checkout</b><small>Cash on delivery available</small></p>
+      <p>♡ <b>Personal support</b><small>A thoughtful studio experience</small></p>
     </section>
-
-    <section class="occasion" id="occasion">
-      <figure class="occasion-photo">
-        <img src="https://images.unsplash.com/photo-1583391733981-8498406449ed?auto=format&fit=crop&w=1400&q=88" alt="Yellow embroidered Indian dress">
-      </figure>
-      <div class="occasion-copy">
-        <p class="eyebrow">A little something for every moment</p>
-        <h2>Your <em>occasion</em>,<br>your saree.</h2>
-        <p>From intimate haldi mornings to long-awaited weddings, find a piece that feels unmistakably yours.</p>
-        <a class="button button-light" href="https://wa.me/919494739944?text=Hello%20Aishwarya%2C%20I%20would%20like%20help%20finding%20a%20saree." target="_blank" rel="noreferrer">Find your saree <span>→</span></a>
-        <p class="script-note">Let us help you choose</p>
-      </div>
+    <section id="collections" class="collection">
+      <p class="eyebrow">Current collection</p>
+      <h2>Made to be <em>remembered.</em></h2>
+      <div class="shop-intro"><p>Each piece is available in limited quantity. Add a piece to your bag to place your order.</p><a href="#contact">Need help choosing? →</a></div>
+      <div class="product-grid" id="productGrid" aria-live="polite"><p class="loading">Curating the current collection…</p></div>
     </section>
-
-    <section class="collection" id="collections">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">The current edit</p>
-          <h2>Sarees with a <em>point of view.</em></h2>
-        </div>
-        <a class="text-link" href="https://wa.me/919494739944?text=Hello%20Aishwarya%2C%20I%20would%20like%20to%20see%20the%20latest%20edit." target="_blank" rel="noreferrer">See the latest pieces <span>→</span></a>
-      </div>
-      <div class="product-grid">
-        <article><img src="https://images.unsplash.com/photo-1594736797933-d0c5ee0d2cd8?auto=format&fit=crop&w=900&q=85" alt="Pink traditional saree"><p>Festive silks</p></article>
-        <article><img src="https://images.unsplash.com/photo-1605763240000-7e93b172d754?auto=format&fit=crop&w=900&q=85" alt="Woman in elegant green attire"><p>Modern drapes</p></article>
-        <article><img src="https://images.unsplash.com/photo-1610189020380-749d1c1f1df1?auto=format&fit=crop&w=900&q=85" alt="Detailed gold textile"><p>Celebration classics</p></article>
-      </div>
-    </section>
-
-    <section class="instagram" id="instagram">
-      <div class="instagram-heading">
-        <h2>Follow along <em>@almara_by_aishwarya</em></h2>
-        <a class="text-link" href="https://www.instagram.com/almara_by_aishwarya/" target="_blank" rel="noreferrer">Instagram <span>↗</span></a>
-      </div>
-      <div class="instagram-grid">
-        <img src="https://images.unsplash.com/photo-1610189020380-749d1c1f1df1?auto=format&fit=crop&w=900&q=85" alt="Gold saree detail">
-        <img src="https://images.unsplash.com/photo-1594736797933-d0c5ee0d2cd8?auto=format&fit=crop&w=900&q=85" alt="Festive Indian fashion">
-        <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=900&q=85" alt="Saree portrait">
-        <img src="https://images.unsplash.com/photo-1605763240000-7e93b172d754?auto=format&fit=crop&w=900&q=85" alt="Elegant occasionwear">
-      </div>
-    </section>
+    <section id="story" class="story"><p class="eyebrow">Our point of view</p><h2>More than six yards.<br><em>A feeling of home.</em></h2><p>Every Aishwarya piece begins with the quiet power of a saree: the craft, the history, and the way it makes an ordinary day feel ceremonial.</p></section>
+    <section id="contact" class="contact"><p class="eyebrow">Private appointments</p><h2>Find the one that<br><em>feels like you.</em></h2><a class="button pale" href="https://wa.me/919494739944" target="_blank" rel="noopener">Chat on WhatsApp <span>→</span></a></section>
   </main>
+  <footer><a class="brand" href="/">AISHWARYA</a><p>© 2026 Aishwarya. Made in India.</p><a href="/admin/">Private studio sign in</a></footer>
 
-  <footer>
-    <a class="wordmark" href="#top">AISHWARYA</a>
-    <p>Private studio <span>•</span> India</p>
-    <a href="mailto:hello@aishwarya.studio">hello@aishwarya.studio</a>
-  </footer>
-
-  <a class="whatsapp-float" href="https://wa.me/919494739944?text=Hello%20Aishwarya%2C%20I%20would%20like%20to%20know%20more." target="_blank" rel="noreferrer" aria-label="Chat with Aishwarya on WhatsApp">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M27.1 4.8A15.7 15.7 0 0 0 16 0C7.4 0 .4 7 .4 15.6c0 2.8.7 5.4 2.1 7.8L0 32l8.8-2.3a15.5 15.5 0 0 0 7.2 1.8h.1c8.6 0 15.6-7 15.6-15.6 0-4.2-1.6-8.1-4.6-11.1Zm-11 24.1h-.1c-2.3 0-4.6-.6-6.6-1.8l-.5-.3-5.2 1.4 1.4-5.1-.3-.5a12.9 12.9 0 0 1-2-6.9C2.8 8.5 8.7 2.7 16 2.7c3.5 0 6.8 1.4 9.3 3.9s3.8 5.8 3.8 9.3c0 7.2-5.8 13-13 13Zm7.1-9.8c-.4-.2-2.4-1.2-2.7-1.3-.4-.1-.7-.2-1 .2-.3.4-1 1.3-1.3 1.6-.2.3-.5.3-.9.1-2.4-1.2-4-2.2-5.6-5-.4-.7.4-.6 1.1-2 .1-.3.1-.6 0-.8-.1-.2-1-2.3-1.3-3.1-.3-.8-.7-.7-1-.7h-.8c-.3 0-.8.1-1.2.6-.4.4-1.6 1.6-1.6 3.9s1.7 4.5 1.9 4.8c.2.3 3.4 5.2 8.2 7.3 3 .9 4.2.8 5.7.7.9-.1 2.4-1 2.7-1.9.3-.9.3-1.8.2-1.9-.1-.2-.3-.3-.7-.5Z"/></svg>
-    <span>Chat on WhatsApp</span>
-  </a>
+  <aside class="drawer" id="bagDrawer" aria-label="Shopping bag" aria-hidden="true">
+    <div class="drawer-head"><p class="eyebrow">Your selection</p><button class="icon-button" type="button" data-close aria-label="Close bag">×</button></div>
+    <h2>Your <em>bag.</em></h2>
+    <div id="bagItems" class="bag-items"></div>
+    <div class="bag-summary"><p><span>Shipping</span><b id="shippingPrice">Calculated at checkout</b></p><p class="total"><span>Subtotal</span><b id="bagSubtotal">₹0</b></p></div>
+    <button class="button full" id="checkoutStart" type="button">Continue to checkout <span>→</span></button>
+    <p class="fine-print">Cash on delivery is available. Delivery will be arranged after your order is confirmed.</p>
+  </aside>
+  <section class="drawer checkout-drawer" id="checkoutDrawer" aria-label="Checkout" aria-hidden="true">
+    <div class="drawer-head"><p class="eyebrow">Secure checkout</p><button class="icon-button" type="button" data-close aria-label="Close checkout">×</button></div>
+    <h2>Delivery <em>details.</em></h2>
+    <form id="checkoutForm">
+      <div class="checkout-grid"><label>Full name<input name="name" required autocomplete="name"></label><label>Mobile number<input name="phone" required inputmode="tel" autocomplete="tel" placeholder="+91"></label></div>
+      <label>Email address <span>(optional)</span><input name="email" type="email" autocomplete="email"></label>
+      <label>Delivery address<textarea name="address" required autocomplete="street-address" rows="3"></textarea></label>
+      <label>Landmark <span>(optional)</span><input name="landmark"></label>
+      <div class="checkout-grid"><label>City<input name="city" required autocomplete="address-level2"></label><label>State<input name="state" autocomplete="address-level1"></label></div>
+      <label>PIN code<input name="pincode" required inputmode="numeric" autocomplete="postal-code"></label>
+      <fieldset><legend>Payment method</legend><label class="payment-choice"><input type="radio" name="paymentMethod" value="cod" checked><span><b>Cash on delivery</b><small>Pay when your order arrives</small></span></label><label class="payment-choice disabled"><input type="radio" name="paymentMethod" value="online" disabled><span><b>Online payment</b><small>Coming soon</small></span></label></fieldset>
+      <p class="checkout-total">Order total <strong id="checkoutTotal">₹0</strong></p>
+      <button class="button full" type="submit">Place COD order <span>→</span></button>
+      <p class="fine-print">By placing your order, you agree that the studio may contact you to confirm delivery.</p>
+      <p class="form-message" id="checkoutMessage" aria-live="polite"></p>
+    </form>
+  </section>
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <script src="/store.js" defer></script>
 </body>
 </html>
