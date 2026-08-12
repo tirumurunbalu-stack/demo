@@ -11,6 +11,7 @@ const ORDERS = 'store/orders.json';
 const CUSTOMERS = 'store/customers.json';
 const PENDING = id => `pending/${id}.json`;
 const CHALLENGE = id => `challenge/${id}.json`;
+const CUSTOMER_RESET = id => `customer-reset/${id}.json`;
 const b64url = value => Buffer.from(value).toString('base64url');
 const unb64url = value => Buffer.from(value, 'base64url').toString();
 const now = () => Date.now();
@@ -82,6 +83,17 @@ function checkCustomerDetails(body) { const name = clean(body.name), email = nor
 async function customerSignup(body) { const details = checkCustomerDetails(body); const customers = await storeList(CUSTOMERS); if (customers.some(customer => customer.email === details.email || customer.phone === details.phone)) throw fail(409, 'An account already exists with this email or mobile number. Please sign in.'); const customer = { id: random(18), name: details.name, email: details.email, phone: details.phone, passwordHash: await hashPassword(details.password), createdAt: new Date().toISOString() }; customers.unshift(customer); await put(CUSTOMERS, customers); const token = sign({ sub: customer.id, role: 'customer', exp: now() + 30 * 24 * 60 * 60 * 1000 }); return { response: { customer: { name: customer.name, email: customer.email } }, cookie: cookie('aishwarya_customer_session', token, 30 * 24 * 60 * 60) }; }
 async function customerLogin(body) { const principal = clean(body.principal); const password = String(body.password || ''); const customer = (await storeList(CUSTOMERS)).find(item => item.email === normalEmail(principal) || item.phone === normalPhone(principal)); if (!customer || !(await matchesPassword(password, customer.passwordHash))) throw fail(401, 'Email or mobile number and password do not match.'); const token = sign({ sub: customer.id, role: 'customer', exp: now() + 30 * 24 * 60 * 60 * 1000 }); return { response: { customer: { name: customer.name, email: customer.email } }, cookie: cookie('aishwarya_customer_session', token, 30 * 24 * 60 * 60) }; }
 async function customerMe(event) { const account = customerSession(event); const customer = (await storeList(CUSTOMERS)).find(item => item.id === account.sub); if (!customer) throw fail(401, 'Please sign in again.'); return { customer: { name: customer.name, email: customer.email, phone: customer.phone } }; }
+async function sendCustomerResetEmail(customer, resetId, event) {
+  if (!process.env.RESEND_API_KEY || !process.env.OTP_FROM_EMAIL) throw fail(500, 'Password reset email is not configured yet.');
+  const url = `${publicOrigin(event).replace(/\/$/, '')}/account/reset/?token=${encodeURIComponent(resetId)}`;
+  const result = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'content-type': 'application/json' }, body: JSON.stringify({ from: process.env.OTP_FROM_EMAIL, to: [customer.email], subject: 'Reset your Aishwarya Private Studio password', text: `Hello ${customer.name},\n\nReset your Aishwarya Private Studio password using this link:\n${url}\n\nThis link expires in 30 minutes and can be used once. If you did not request it, you can safely ignore this email.` }) });
+  if (!result.ok) throw fail(502, 'We could not send the reset email. Please try again shortly.');
+}
+async function customerPasswordResetStart(body, event) { const email = normalEmail(body.email); if (!/^\S+@\S+\.\S+$/.test(email)) throw fail(400, 'Enter a valid email address.'); const customer = (await storeList(CUSTOMERS)).find(item => item.email === email); if (customer) { const id = random(24); await put(CUSTOMER_RESET(id), { id, customerId: customer.id, expiresAt: now() + 30 * 60 * 1000 }); await sendCustomerResetEmail(customer, id, event); } return { ok: true }; }
+async function customerPasswordResetComplete(body) { const reset = await read(CUSTOMER_RESET(body.token)); if (!reset || reset.expiresAt < now()) throw fail(400, 'This password reset link has expired. Please request a new one.'); const password = String(body.password || ''); if (password.length < 8) throw fail(400, 'Use a password with at least 8 characters.'); const customers = await storeList(CUSTOMERS); const index = customers.findIndex(customer => customer.id === reset.customerId); if (index < 0) throw fail(400, 'This password reset link is no longer valid.'); customers[index].passwordHash = await hashPassword(password); customers[index].updatedAt = new Date().toISOString(); await put(CUSTOMERS, customers); await remove(CUSTOMER_RESET(reset.id)); return { ok: true }; }
+function publicOrder(order) { return { id: order.id, items: order.items, total: order.total, paymentMethod: order.paymentMethod, paymentStatus: order.paymentStatus, fulfillmentStatus: order.fulfillmentStatus, trackingNumber: order.trackingNumber || '', deliveryPartner: order.deliveryPartner, createdAt: order.createdAt, updatedAt: order.updatedAt || order.createdAt }; }
+async function customerOrders(event) { const account = customerSession(event); return { orders: (await storeList(ORDERS)).filter(order => order.customerId === account.sub).map(publicOrder) }; }
+async function trackOrder(body) { const id = clean(body.orderId).toUpperCase(); const email = normalEmail(body.email); const order = (await storeList(ORDERS)).find(item => item.id === id && item.customer && item.customer.email === email); if (!order) throw fail(404, 'We could not find an order matching those details.'); return { order: publicOrder(order) }; }
 async function publicProducts() { return { products: (await storeList(PRODUCTS)).filter(item => item.active !== false && item.stock > 0).map(({ image, ...item }) => ({ ...item, image })) }; }
 async function adminProducts(event) { ownerSession(event); return { products: await storeList(PRODUCTS) }; }
 async function saveProduct(body, event) { ownerSession(event); const items = await storeList(PRODUCTS); const name = clean(body.name); const price = Number(body.price); const stock = Number(body.stock);
@@ -91,13 +103,14 @@ async function saveProduct(body, event) { ownerSession(event); const items = awa
   const index = items.findIndex(product => product.id === item.id); if (index >= 0) items[index] = { ...items[index], ...item }; else { item.createdAt = item.updatedAt; items.unshift(item); } await put(PRODUCTS, items); return { product: item };
 }
 async function deleteProduct(body, event) { ownerSession(event); const items = await storeList(PRODUCTS); await put(PRODUCTS, items.filter(item => item.id !== body.id)); return { ok: true }; }
-async function createOrder(body) { const products = await storeList(PRODUCTS); const cart = Array.isArray(body.items) ? body.items : []; if (!cart.length) throw fail(400, 'Your bag is empty.');
+async function createOrder(body, event) { const products = await storeList(PRODUCTS); const cart = Array.isArray(body.items) ? body.items : []; if (!cart.length) throw fail(400, 'Your bag is empty.');
   const customer = body.customer || {}; const required = ['name','phone','address','city','pincode']; if (required.some(key => !clean(customer[key]))) throw fail(400, 'Please complete your delivery address.');
   const lineItems = cart.map(line => { const product = products.find(item => item.id === line.id && item.active !== false); const quantity = Number(line.quantity); if (!product || !Number.isInteger(quantity) || quantity < 1 || product.stock < quantity) throw fail(400, 'One of the selected pieces is no longer available.'); return { id: product.id, name: product.name, price: product.price, quantity, image: product.image }; });
   const subtotal = lineItems.reduce((sum, item) => sum + item.price * item.quantity, 0); const shipping = subtotal >= 5000 ? 0 : 250; const paymentMethod = body.paymentMethod === 'cod' ? 'cod' : 'online';
   if (paymentMethod === 'online' && !process.env.RAZORPAY_KEY_ID) throw fail(400, 'Online payment will be available once the studio connects its payment account. Please choose Cash on Delivery for this test.');
   for (const line of lineItems) products.find(item => item.id === line.id).stock -= line.quantity;
-  const order = { id: orderId(), items: lineItems, customer: { name: clean(customer.name), email: normalEmail(customer.email), phone: normalPhone(customer.phone), address: clean(customer.address), landmark: clean(customer.landmark), city: clean(customer.city), state: clean(customer.state), pincode: clean(customer.pincode) }, subtotal, shipping, total: subtotal + shipping, paymentMethod, paymentStatus: paymentMethod === 'cod' ? 'due on delivery' : 'awaiting payment', fulfillmentStatus: 'new', deliveryPartner: 'Delhivery — ready to connect', createdAt: new Date().toISOString() };
+  const signedIn = verify(getCookie(event, 'aishwarya_customer_session')); const account = signedIn && signedIn.role === 'customer' ? (await storeList(CUSTOMERS)).find(item => item.id === signedIn.sub) : null;
+  const order = { id: orderId(), customerId: account ? account.id : '', items: lineItems, customer: { name: clean(customer.name), email: normalEmail(customer.email), phone: normalPhone(customer.phone), address: clean(customer.address), landmark: clean(customer.landmark), city: clean(customer.city), state: clean(customer.state), pincode: clean(customer.pincode) }, subtotal, shipping, total: subtotal + shipping, paymentMethod, paymentStatus: paymentMethod === 'cod' ? 'due on delivery' : 'awaiting payment', fulfillmentStatus: 'new', deliveryPartner: 'Delhivery — ready to connect', createdAt: new Date().toISOString() };
   const orders = await storeList(ORDERS); orders.unshift(order); await put(PRODUCTS, products); await put(ORDERS, orders); return { order };
 }
 async function adminOrders(event) { ownerSession(event); return { orders: await storeList(ORDERS) }; }
@@ -123,8 +136,12 @@ exports.handler = async event => {
     if (action === 'customer/login') { const result = await customerLogin(body); return json(200, result.response, result.cookie); }
     if (action === 'customer/me') return json(200, await customerMe(event));
     if (action === 'customer/logout') return json(200, { ok: true }, cookie('aishwarya_customer_session', ''));
+    if (action === 'customer/password-reset/start') return json(200, await customerPasswordResetStart(body, event));
+    if (action === 'customer/password-reset/complete') return json(200, await customerPasswordResetComplete(body));
+    if (action === 'customer/orders') return json(200, await customerOrders(event));
+    if (action === 'store/track-order') return json(200, await trackOrder(body));
     if (action === 'store/products') return json(200, await publicProducts());
-    if (action === 'store/checkout') return json(200, await createOrder(body));
+    if (action === 'store/checkout') return json(200, await createOrder(body, event));
     if (action === 'admin/dashboard') return json(200, await dashboard(event));
     if (action === 'admin/products') return json(200, await adminProducts(event));
     if (action === 'admin/product/save') return json(200, await saveProduct(body, event));
