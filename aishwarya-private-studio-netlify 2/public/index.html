@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/mobile.css">
   <link rel="stylesheet" href="/social.css">
 </head>
 <body>
@@ -15,8 +16,10 @@
   <header>
     <a class="brand" href="/">AISHWARYA</a>
     <nav><a href="#collections">Collections</a><a href="#story">Our story</a><a href="/track-order/">Track order</a><a href="/account/">My account</a><a href="/admin/">Private studio</a></nav>
+    <button class="menu-trigger" id="menuTrigger" type="button" aria-expanded="false" aria-controls="mobileMenu">Menu <span>+</span></button>
     <button class="bag-trigger" id="bagTrigger" type="button" aria-haspopup="dialog">Bag <span id="bagCount">0</span> <b>→</b></button>
   </header>
+  <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation" hidden><a href="#collections">Collections</a><a href="#story">Our story</a><a href="/track-order/">Track order</a><a href="/account/">My account</a><a href="/admin/">Private studio</a></nav>
   <main>
     <section class="hero">
       <div>
@@ -69,6 +72,6 @@
     </form>
   </section>
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
-  <script src="/store-script.js" defer></script>
+  <script src="/store.js" defer></script>
 </body>
 </html>
