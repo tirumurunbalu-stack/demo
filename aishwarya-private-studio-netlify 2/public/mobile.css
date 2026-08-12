@@ -1,3 +1,7 @@
+/* Never show the mobile controls in desktop layout. */
+.menu-trigger,
+.mobile-menu { display: none; }
+
 @media (max-width:720px){
   header{height:67px;padding:0 20px;gap:12px}
   header>.brand{margin-right:auto}
