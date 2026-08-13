@@ -86,6 +86,12 @@
         trigger.querySelector('span').textContent = open ? '−' : '+';
       });
       menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
+      document.addEventListener('click', (event) => {
+        const card = event.target.closest('.product-card');
+        if (!card || event.target.closest('.add-button')) return;
+        const id = card.querySelector('[data-add]')?.dataset.add;
+        if (id) location.href = `/product.html?id=${encodeURIComponent(id)}`;
+      });
     });
   </script>
 </body>
